@@ -35,17 +35,17 @@ const LineNumberedTextArea: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex text-sm font-mono">
-      <div className="w-16 h-96 overflow-y-hidden bg-gray-200 text-right border-y-2 border-l-2 rounded-l border-gray-300 text-gray-500 inline-block align-bottom">
+    <div className="border-2 border-gray-300 flex font-mono h-72 rounded text-sm">
+      <div className="bg-gray-200 overflow-y-hidden pr-2 text-gray-500 text-right w-16">
         {visibleLines.map((lineNumber) => (
-          <div key={lineNumber} className="pr-2">
+          <div key={lineNumber}>
             {lineNumber}
           </div>
         ))}
       </div>
       <textarea
         ref={textareaRef}
-        className="resize-none w-full h-96 pl-2 border-y-2 border-r-2 rounded-r border-gray-300 outline-none overflow-y-auto align-top font-mono"
+        className="outline-none overflow-y-auto pl-2 resize-none w-full"
         value={text}
         onChange={handleTextAreaChange}
         onScroll={() => calculateVisibleLines(text)}
