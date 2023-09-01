@@ -1,13 +1,20 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
-const LineNumberedTextArea: React.FC = () => {
-  const [text, setText] = useState<string>('');
+interface LineNumberedTextAreaProps {
+  value: string;
+  onChange?: (value: string) => void;
+  height?: string;
+}
+
+const LineNumberedTextArea: React.FC<LineNumberedTextAreaProps> = ({ value, onChange }) => {
   const [visibleLines, setVisibleLines] = useState<number[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
-    setText(newText);
+    if (onChange) {
+      onChange(newText);
+    }
     calculateVisibleLines(newText);
   };
 
@@ -31,12 +38,12 @@ const LineNumberedTextArea: React.FC = () => {
   };
 
   useEffect(() => {
-    calculateVisibleLines(text);
-  }, []);
+    calculateVisibleLines(value);
+  }, [value]);
 
   return (
-    <div className="border-2 border-gray-300 flex font-mono h-72 rounded text-sm">
-      <div className="bg-gray-200 overflow-y-hidden pr-2 text-gray-500 text-right w-16">
+    <div className="flex text-sm h-72 font-mono border-gray-300 rounded border-2">
+      <div className="w-16 bg-gray-200 text-right text-gray-500 pr-2">
         {visibleLines.map((lineNumber) => (
           <div key={lineNumber}>
             {lineNumber}
@@ -45,10 +52,11 @@ const LineNumberedTextArea: React.FC = () => {
       </div>
       <textarea
         ref={textareaRef}
-        className="outline-none overflow-y-auto pl-2 resize-none w-full"
-        value={text}
+        className="resize-none w-full pl-2 outline-none overflow-x-auto"
+        style={{ overflowX: 'auto' }}
+        value={value}
         onChange={handleTextAreaChange}
-        onScroll={() => calculateVisibleLines(text)}
+        onScroll={() => calculateVisibleLines(value)}
       />
     </div>
   );
