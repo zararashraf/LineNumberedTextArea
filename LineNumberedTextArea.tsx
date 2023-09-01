@@ -6,15 +6,17 @@ const LineNumberedTextArea: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
+    const newText = e.target.value;
+    setText(newText);
+    calculateVisibleLines(newText);
   };
 
-  const calculateVisibleLines = () => {
+  const calculateVisibleLines = (newText: string) => {
     if (textareaRef.current) {
       const computedStyle = getComputedStyle(textareaRef.current);
       const lineHeight = parseFloat(computedStyle.lineHeight);
       const { scrollTop, clientHeight } = textareaRef.current;
-      const totalLines = text.split('\n').length;
+      const totalLines = newText.split('\n').length;
       const visibleCount = Math.floor(clientHeight / lineHeight);
       const firstVisibleLine = Math.max(1, Math.ceil(scrollTop / lineHeight) + 1);
       const lastVisibleLine = Math.min(totalLines, firstVisibleLine + visibleCount - 1);
@@ -29,27 +31,25 @@ const LineNumberedTextArea: React.FC = () => {
   };
 
   useEffect(() => {
-    calculateVisibleLines();
-  }, [text]);
+    calculateVisibleLines(text);
+  }, []);
 
   return (
-    <div className="flex text-sm">
-      <div className="w-16 h-96 overflow-y-hidden bg-gray-200 text-right border-r border-gray-300 text-gray-500">
+    <div className="flex text-sm font-mono">
+      <div className="w-16 h-96 overflow-y-hidden bg-gray-200 text-right border-y-2 border-l-2 rounded-l border-gray-300 text-gray-500 inline-block align-bottom">
         {visibleLines.map((lineNumber) => (
-          <div key={lineNumber} className="pr-2 font-mono">
+          <div key={lineNumber} className="pr-2">
             {lineNumber}
           </div>
         ))}
       </div>
-      <div className="flex-1">
-        <textarea
-          ref={textareaRef}
-          className="resize-none mt-0 pt-0 p-2 w-full h-96 border-y-2 border-r-2 rounded-r border-gray-300 outline-none overflow-y-auto font-mono"
-          value={text}
-          onChange={handleTextAreaChange}
-          onScroll={calculateVisibleLines}
-        />
-      </div>
+      <textarea
+        ref={textareaRef}
+        className="resize-none w-full h-96 pl-2 border-y-2 border-r-2 rounded-r border-gray-300 outline-none overflow-y-auto align-top font-mono"
+        value={text}
+        onChange={handleTextAreaChange}
+        onScroll={() => calculateVisibleLines(text)}
+      />
     </div>
   );
 };
